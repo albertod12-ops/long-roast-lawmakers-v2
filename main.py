@@ -46,8 +46,10 @@ def main():
     os.umask(0o022)
     assert 1 <= len(ENTRY) <= MAX_CHARS, "entry must be 1-320 characters"
     assert ENTRY == ENTRY.strip(), "entry must not start or end with whitespace"
-    # One sentence: no ". " mid-sentence (".docx" is a file extension, not a break).
-    assert ENTRY.count(". ") == 0 and ENTRY.endswith("."), "entry must be one sentence"
+    # One sentence: no sentence-terminating punctuation mid-entry (".docx" is a
+    # file extension, not a break) and no line breaks.
+    assert not any(sep in ENTRY for sep in (". ", "! ", "? ", "\n")), "entry must be one sentence"
+    assert ENTRY.endswith("."), "entry must end with a full stop"
     data = ENTRY.encode("utf-8")
     os.makedirs("/output", exist_ok=True)
     with open("/output/entry.txt", "wb") as f:
